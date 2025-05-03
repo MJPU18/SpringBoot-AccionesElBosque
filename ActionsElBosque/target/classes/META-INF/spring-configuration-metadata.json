@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "alpaca.api",
+      "type": "co.edu.unbosque.config.AlpacaConfig",
+      "sourceType": "co.edu.unbosque.config.AlpacaConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "alpaca.api.base-url",
+      "type": "java.lang.String",
+      "sourceType": "co.edu.unbosque.config.AlpacaConfig"
+    },
+    {
+      "name": "alpaca.api.token-auth",
+      "type": "java.lang.String",
+      "sourceType": "co.edu.unbosque.config.AlpacaConfig"
+    }
+  ],
+  "hints": []
+}

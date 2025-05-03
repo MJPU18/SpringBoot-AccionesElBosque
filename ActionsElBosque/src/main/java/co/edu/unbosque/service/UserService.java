@@ -32,7 +32,7 @@ public class UserService implements CRUDOperation<User>{
 	public void create(User data) {
 		userRepo.save(data);
 	}
-
+	
 	@Override
 	public List<User> getAll() {
 		return userRepo.findAll();
@@ -87,21 +87,7 @@ public class UserService implements CRUDOperation<User>{
         else if (user.getLastName().length() > 175) {
            sb.append("\nApellido demasiado largo no debe exceder los 175 caracteres.");
         }
-        if (user.getResidentialAddress() == null || user.getResidentialAddress().trim().isEmpty()) {
-            sb.append("\nDirección vacia.");
-        }
-        else if (user.getResidentialAddress().length() > 175) {
-            sb.append("\nDirección demasiada larga no debe exceder los 175 caracteres.");
-        }
-        if (user.getZipCode() == null || user.getZipCode().trim().isEmpty()) {
-            sb.append("\nCodigo postal vacio.");
-        }
-        if (!user.getZipCode().matches("\\d{6}")) {
-            sb.append("\nEl código postal debe contener exactamente 6 dígitos numéricos.");
-        }
-        if ("000000".equals(user.getZipCode())) {
-            sb.append("\nEl código postal '000000' no es válido.");
-        }
+ 
         if(user.getEmail()!=null && !user.getEmail().matches("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$")) {
         	sb.append("\nEmail invalido.");
         }
