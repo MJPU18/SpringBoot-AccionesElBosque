@@ -26,7 +26,7 @@ public class UserController {
 	private UserService userServ;
 	
 	public UserController() {
-		// TODO Auto-generated constructor stub
+		
 	}
 	
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
