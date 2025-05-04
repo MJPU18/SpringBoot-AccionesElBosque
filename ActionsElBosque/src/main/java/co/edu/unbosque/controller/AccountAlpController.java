@@ -18,7 +18,7 @@ import co.edu.unbosque.model.User;
 import co.edu.unbosque.model.request.AchRelationshipRequest;
 import co.edu.unbosque.model.request.UserRequest;
 import co.edu.unbosque.service.AccountAlpService;
-import co.edu.unbosque.service.AchRelationshipService;
+import co.edu.unbosque.service.AchService;
 import co.edu.unbosque.service.UserService;
 
 @RestController
