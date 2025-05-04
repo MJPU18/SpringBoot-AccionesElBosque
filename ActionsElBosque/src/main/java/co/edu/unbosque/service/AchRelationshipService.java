@@ -13,15 +13,15 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Service
-public class AccountAlpService {
+public class AchRelationshipService {
 
-    private final WebClient brokerClient; // Nuevo cliente para la API broker
+    private final WebClient brokerClient; 
     private final ObjectMapper objectMapper;
 
-    public AccountAlpService(AlpacaConfig config) {
+    public AchRelationshipService(AlpacaConfig config) {
                 
         this.brokerClient = WebClient.builder()
-                .baseUrl("https://broker-api.sandbox.alpaca.markets")
+                .baseUrl(config.getBaseUrl())
                 .defaultHeader("Authorization", config.getTokenAuth())
                 .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(50 * 1024 * 1024))
                 .build();
@@ -29,24 +29,10 @@ public class AccountAlpService {
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     }
     
-    public Object getAccounts() {
-        String response = brokerClient.get()
-                .uri("/v1/accounts")
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
-
-        try {
-            return objectMapper.readValue(response, Object.class);
-        } catch (Exception e) {
-            return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
-        }
-    }
-    
-    public Mono<Object> createAccount(UserRequest user) {
+    public Mono<Object> createAchRelationship(String accountId, AchRelationshipRequest request) {
         return brokerClient.post()
-                .uri("/v1/accounts")
-                .bodyValue(user)
+                .uri("/v1/accounts/{account_id}/ach_relationships", accountId)
+                .bodyValue(request)
                 .retrieve()
                 .bodyToMono(String.class)
                 .map(response -> {
@@ -58,5 +44,4 @@ public class AccountAlpService {
                 })
                 .onErrorResume(e -> Mono.just(Map.of("error", "Error en la solicitud", "details", e.getMessage())));
     }
-
 }
