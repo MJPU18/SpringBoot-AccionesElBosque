@@ -21,16 +21,13 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
-	@Column(unique = true)
 	private String cardId;
 	private String alpacaUserId;
 	private String firstName;
 	private String lastName;
-	
 	@Column(unique = true)
 	private String email;
 	private String password;
-	@Column(unique = true)
 	private String phone;
 	private boolean isAdministrator;
 	
