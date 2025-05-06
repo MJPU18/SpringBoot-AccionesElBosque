@@ -137,13 +137,5 @@ public class UserController {
 //	            .bodyToMono(String.class)
 //	            .block();
 //	}
-	
-	@GetMapping(path = "/check")
-	public ResponseEntity<String> checkAccount(@RequestParam String email, @RequestParam String password){
-		if(userServ.verifyAccount(email, password)) {
-			return new ResponseEntity<String>("Encontrado",HttpStatus.FOUND);
-		}
-		return new ResponseEntity<String>("No encontrado",HttpStatus.NOT_FOUND);
-	}
 
 }

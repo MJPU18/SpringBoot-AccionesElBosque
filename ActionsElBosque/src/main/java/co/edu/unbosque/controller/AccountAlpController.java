@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unbosque.model.User;
@@ -29,6 +30,7 @@ public class AccountAlpController {
 
 	@Autowired
 	private UserService userServ;
+	@Autowired
 	private AccountAlpService accountServ;
 
 
@@ -72,6 +74,16 @@ public class AccountAlpController {
 			}
 		}
 		return ResponseEntity.internalServerError().body("Respuesta inesperada del servicio Alpaca");
+	}
+	
+	@GetMapping(path = "/check")
+	public ResponseEntity<Object> checkAccount(@RequestParam String email, @RequestParam String password){
+		String alpacaUserId=userServ.verifyAccount(email, password);
+		if(alpacaUserId!=null) {
+			Object account = accountServ.getAccountById(alpacaUserId);
+			return new ResponseEntity<Object>(account,HttpStatus.OK);
+		}
+		return new ResponseEntity<Object>("No encontrado",HttpStatus.NOT_FOUND);
 	}
 
 }

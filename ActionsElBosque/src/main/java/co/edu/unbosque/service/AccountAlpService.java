@@ -1,4 +1,4 @@
-package co.edu.unbosque.service;
+	package co.edu.unbosque.service;
 
 import co.edu.unbosque.config.AlpacaConfig;
 import co.edu.unbosque.model.request.AchRelationshipRequest;
@@ -15,7 +15,7 @@ import java.util.Map;
 @Service
 public class AccountAlpService {
 
-    private final WebClient brokerClient; // Nuevo cliente para la API broker
+    private final WebClient brokerClient; 
     private final ObjectMapper objectMapper;
 
     public AccountAlpService(AlpacaConfig config) {
@@ -43,6 +43,7 @@ public class AccountAlpService {
         }
     }
     
+    
     public Mono<Object> createAccount(UserRequest user) {
         return brokerClient.post()
                 .uri("/v1/accounts")
@@ -58,5 +59,20 @@ public class AccountAlpService {
                 })
                 .onErrorResume(e -> Mono.just(Map.of("error", "Error en la solicitud", "details", e.getMessage())));
     }
+    
+    public Object getAccountById(String id) {
+        String response = brokerClient.get()
+                .uri("/v1/accounts/{id}", id)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            return objectMapper.readValue(response, Object.class); // o puedes mapear a una clase Account si la tienes
+        } catch (Exception e) {
+            return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
+        }
+    }
+
 
 }
