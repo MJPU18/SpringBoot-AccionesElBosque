@@ -29,7 +29,6 @@ public class AchController {
 		return ResponseEntity.ok(response);
 	}
 	
-	// Add this method to AchRelationshipController.java
 	@PostMapping("/accounts/{account_id}/transfers")
 	public ResponseEntity<Object> createAchTransfer(@PathVariable("account_id") String accountId,
 	        @RequestBody AchTransferRequest request) {

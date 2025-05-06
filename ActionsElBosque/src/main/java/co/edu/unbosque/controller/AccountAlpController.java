@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unbosque.model.User;
 import co.edu.unbosque.model.request.AchRelationshipRequest;
+import co.edu.unbosque.model.request.UserAlpRequest;
 import co.edu.unbosque.model.request.UserRequest;
 import co.edu.unbosque.service.AccountAlpService;
 import co.edu.unbosque.service.AchService;
 import co.edu.unbosque.service.UserService;
+import co.edu.unbosque.util.UserRequestMapper;
 
 @RestController
 @RequestMapping("/alpaca")
@@ -42,8 +44,8 @@ public class AccountAlpController {
 
 	@PostMapping(path = "/accounts/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAccount(@RequestBody UserRequest request) {
-
-		Object response = accountServ.createAccount(request).block();
+		UserAlpRequest userAlp=UserRequestMapper.toUserAlpRequest(request);
+		Object response = accountServ.createAccount(userAlp).block();
 
 		if (response instanceof Map) {
 			Map<?, ?> responseMap = (Map<?, ?>) response;
@@ -58,7 +60,7 @@ public class AccountAlpController {
 				newUser.setEmail(request.getContact().getEmail_address());
 				newUser.setPhone(request.getContact().getPhone_number());
 				newUser.setCardId(request.getIdentity().getTax_id());
-				newUser.setPassword("defaultPassword");
+				newUser.setPassword(request.getPassword());
 				newUser.setAdministrator(false);
 
 				String validate = userServ.validateUser(newUser);
