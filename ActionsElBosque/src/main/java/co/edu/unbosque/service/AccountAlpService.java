@@ -1,8 +1,7 @@
 	package co.edu.unbosque.service;
 
 import co.edu.unbosque.config.AlpacaConfig;
-import co.edu.unbosque.model.request.AchRelationshipRequest;
-import co.edu.unbosque.model.request.UserRequest;
+import co.edu.unbosque.model.request.UserAlpRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -44,7 +43,7 @@ public class AccountAlpService {
     }
     
     
-    public Mono<Object> createAccount(UserRequest user) {
+    public Mono<Object> createAccount(UserAlpRequest user) {
         return brokerClient.post()
                 .uri("/v1/accounts")
                 .bodyValue(user)

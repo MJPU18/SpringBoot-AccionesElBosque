@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequest {
+public class UserAlpRequest {
     private Contact contact;
     private Identity identity;
     private Disclosures disclosures;
@@ -97,4 +97,6 @@ public class UserRequest {
         private String family_name;
         private String email_address;
     }
+    
+    
 }
