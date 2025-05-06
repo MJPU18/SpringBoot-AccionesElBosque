@@ -56,13 +56,13 @@ public class UserService implements CRUDOperation<User>{
 		return userRepo.findById(id).get();
 	}
 	
-	public boolean verifyAccount(String email, String password) {
+	public String verifyAccount(String email, String password) {
 		for(User user:userRepo.findAll()) {
 			if(email.equals(user.getEmail()) && password.equals(user.getPassword())) {
-				return true;
+				return user.getAlpacaUserId();
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	public String validateUser(User user) {
