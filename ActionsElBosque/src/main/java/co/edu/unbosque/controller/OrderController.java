@@ -1,5 +1,6 @@
 package co.edu.unbosque.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca/orders")
+@CrossOrigin(origins = { "http://localhost:8080", "http://localhost:8085", "http://localhost:4200", "*" })
 public class OrderController {
 
     private final OrderService orderService;

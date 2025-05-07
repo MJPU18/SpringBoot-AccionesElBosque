@@ -67,11 +67,11 @@ public class AccountAlpService {
                 .block();
 
         try {
-            return objectMapper.readValue(response, Object.class); // o puedes mapear a una clase Account si la tienes
+            return objectMapper.readValue(response, Object.class); 
         } catch (Exception e) {
             return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
         }
     }
-
+    
 
 }

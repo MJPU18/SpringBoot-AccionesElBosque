@@ -46,6 +46,14 @@ public class UserService implements CRUDOperation<User>{
 			userRepo.save(temp);
 		}
 	}
+	
+	public String getAlpacaUserIdByEmail(String email) {
+	    Optional<User> userOptional = userRepo.findByEmail(email);
+	    if (userOptional.isPresent()) {
+	        return userOptional.get().getAlpacaUserId();
+	    }
+	    return null;
+	}
 
 	@Override
 	public boolean exist(Long id) {
