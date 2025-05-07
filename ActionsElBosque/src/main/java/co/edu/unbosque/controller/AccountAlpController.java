@@ -23,6 +23,7 @@ import co.edu.unbosque.service.AccountAlpService;
 import co.edu.unbosque.service.AchService;
 import co.edu.unbosque.service.UserService;
 import co.edu.unbosque.util.UserRequestMapper;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca")
@@ -87,5 +88,11 @@ public class AccountAlpController {
 		}
 		return new ResponseEntity<Object>("No encontrado",HttpStatus.NOT_FOUND);
 	}
-
+	
+    @PostMapping("/accounts/{accountId}/close")
+    public Mono<ResponseEntity<Object>> closeAccount(@PathVariable String accountId) {
+        return accountServ.closeAccount(accountId)
+                .map(response -> ResponseEntity.ok().body(response))
+                .defaultIfEmpty(ResponseEntity.ok().build());
+    }
 }

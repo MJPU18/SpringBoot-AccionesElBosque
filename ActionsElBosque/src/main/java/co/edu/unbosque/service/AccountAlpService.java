@@ -1,4 +1,4 @@
-	package co.edu.unbosque.service;
+package co.edu.unbosque.service;
 
 import co.edu.unbosque.config.AlpacaConfig;
 import co.edu.unbosque.model.request.UserAlpRequest;
@@ -72,6 +72,19 @@ public class AccountAlpService {
             return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
         }
     }
-    
+    public Mono<Object> closeAccount(String accountId) {
+        return brokerClient.post()
+                .uri("/v1/accounts/{account_id}/actions/close", accountId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(response -> {
+                    try {
+                        return objectMapper.readValue(response, Object.class);
+                    } catch (Exception e) {
+                        return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
+                    }
+                })
+                .onErrorResume(e -> Mono.just(Map.of("error", "Error al cerrar la cuenta", "details", e.getMessage())));
+    }
 
 }
