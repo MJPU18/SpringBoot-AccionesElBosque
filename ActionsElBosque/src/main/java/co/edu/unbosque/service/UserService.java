@@ -20,8 +20,8 @@ public class UserService implements CRUDOperation<User>{
 	
 
 	@Override
-	public void create(User data) {
-		userRepo.save(data);
+	public User create(User data) {
+		return userRepo.save(data);
 		
 	}
 
@@ -31,20 +31,23 @@ public class UserService implements CRUDOperation<User>{
 	}
 
 	@Override
-	public void deleteById(Long id) {
+	public User deleteById(Long id) {
 		Optional<User> found= userRepo.findById(id);
 		if(found.isPresent()) {
 			userRepo.delete(found.get());
+			return found.get();
 		}
+		return null;
 	}
 
 	@Override
-	public void updateById(Long id, User newData) {
+	public User updateById(Long id, User newData) {
 		Optional<User> found = userRepo.findById(id);
 		if(found.isPresent()) {
 			User temp= found.get();
-			userRepo.save(temp);
+			return userRepo.save(temp);
 		}
+		return null;
 	}
 	
 	public String getAlpacaUserIdByEmail(String email) {
@@ -64,10 +67,10 @@ public class UserService implements CRUDOperation<User>{
 		return userRepo.findById(id).get();
 	}
 	
-	public String verifyAccount(String email, String password) {
+	public User verifyAccount(String email, String password) {
 		for(User user:userRepo.findAll()) {
 			if(email.equals(user.getEmail()) && password.equals(user.getPassword())) {
-				return user.getAlpacaUserId();
+				return user;
 			}
 		}
 		return null;

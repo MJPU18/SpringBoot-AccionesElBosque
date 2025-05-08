@@ -4,11 +4,11 @@ import java.util.List;
 
 public interface CRUDOperation<T> {
 	
-	public void create(T data);
+	public T create(T data);
 	
-	public void deleteById(Long id);
+	public T deleteById(Long id);
 	
-	public void updateById(Long id, T data);
+	public T updateById(Long id, T data);
 	
 	public List<T> getAll();
 	
