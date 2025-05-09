@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unbosque.model.User;
-import co.edu.unbosque.model.request.AchRelationshipRequest;
 import co.edu.unbosque.model.request.UserAlpRequest;
 import co.edu.unbosque.model.request.UserRequest;
 import co.edu.unbosque.service.AccountAlpService;
-import co.edu.unbosque.service.AchService;
+import co.edu.unbosque.service.UserActivityService;
 import co.edu.unbosque.service.UserService;
 import co.edu.unbosque.util.UserRequestMapper;
 
@@ -34,6 +32,9 @@ public class AccountAlpController {
 	private UserService userServ;
 	@Autowired
 	private AccountAlpService accountServ;
+	@Autowired
+	private UserActivityService userActServ;
+
 
 
 	@GetMapping("/accounts/getall")
@@ -70,7 +71,14 @@ public class AccountAlpController {
 
 				String accountId = (String) responseMap.get("id");
 				newUser.setAlpacaUserId(accountId);
-				userServ.create(newUser);
+				 User savedUser = userServ.create(newUser); 
+		            
+		            userActServ.logUserActivity(
+		                    savedUser.getUserId(),
+		                    "ACCOUNT_CREATION",
+		                    "Usuario creado: " + savedUser.getEmail()
+		                );
+
 
 				return ResponseEntity.ok(response);
 			}
@@ -80,9 +88,14 @@ public class AccountAlpController {
 	
 	@GetMapping(path = "/check")
 	public ResponseEntity<Object> checkAccount(@RequestParam String email, @RequestParam String password){
-		String alpacaUserId=userServ.verifyAccount(email, password);
-		if(alpacaUserId!=null) {
-			Object account = accountServ.getAccountById(alpacaUserId);
+		User user=userServ.verifyAccount(email, password);
+		if(user!=null) {
+			Object account = accountServ.getAccountById(user.getAlpacaUserId());
+            userActServ.logUserActivity(
+                    user.getUserId(),
+                    "LOGIN",
+                    "Usuario inicio sesion: " + user.getEmail()
+                );
 			return new ResponseEntity<Object>(account,HttpStatus.OK);
 		}
 		return new ResponseEntity<Object>("No encontrado",HttpStatus.NOT_FOUND);
