@@ -72,6 +72,48 @@ public class AccountAlpService {
             return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
         }
     }
+    public Mono<Object> getAccountTradingDetails(String id) {
+        return brokerClient.get()
+                .uri("/v1/trading/accounts/{id}/account", id)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(response -> {
+                    try {
+                        return objectMapper.readValue(response, Object.class);
+                    } catch (Exception e) {
+                        return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
+                    }
+                })
+                .onErrorResume(e -> Mono.just(Map.of("error", "Error en la solicitud", "details", e.getMessage())));
+    }
     
-
+    public Mono<Object> getPortfolioHistoryById(String accountId) {
+        return brokerClient.get()
+                .uri("/v1/trading/accounts/{account_id}/account/portfolio/history", accountId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(response -> {
+                    try {
+                        return objectMapper.readValue(response, Object.class);
+                    } catch (Exception e) {
+                        return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
+                    }
+                })
+                .onErrorResume(e -> Mono.just(Map.of("error", "Error al obtener historial de portafolio", "details", e.getMessage())));
+    }
+    public Mono<Object> closeAccount(String accountId) {
+        return brokerClient.post()
+                .uri("/v1/accounts/{account_id}/actions/close", accountId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .map(response -> {
+                    try {
+                        return objectMapper.readValue(response, Object.class);
+                    } catch (Exception e) {
+                        return Map.of("error", "Error al parsear JSON", "details", e.getMessage());
+                    }
+                })
+                .onErrorResume(e -> Mono.just(Map.of("error", "Error al cerrar la cuenta", "details", e.getMessage())));
+    }
+    
 }
