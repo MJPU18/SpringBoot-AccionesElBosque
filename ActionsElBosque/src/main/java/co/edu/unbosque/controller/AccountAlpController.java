@@ -1,5 +1,7 @@
 package co.edu.unbosque.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,10 +117,21 @@ public class AccountAlpController {
 	                return ResponseEntity.ok(response);
 	            });
 	}
+	
 	@PostMapping("/accounts/{accountId}/close")
 	public Mono<ResponseEntity<Object>> closeAccount(@PathVariable String accountId) {
 		return accountServ.closeAccount(accountId).map(response -> ResponseEntity.ok().body(response))
 				.defaultIfEmpty(ResponseEntity.ok().build());
+	}
+	
+	@GetMapping("/accounts/{account_id}/ach-relationships")
+	public Mono<ResponseEntity<List<String>>> getAchRelationshipsIds(@PathVariable("account_id") String accountId) {
+	    return accountServ.getAchRelationshipsIds(accountId)
+	            .map(ResponseEntity::ok)
+	            .onErrorResume(e -> Mono.just(
+	                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                            .body(Collections.emptyList())
+	            ));
 	}
 	
 }

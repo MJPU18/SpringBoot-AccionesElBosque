@@ -45,6 +45,10 @@ public class UserService implements CRUDOperation<User>{
 		Optional<User> found = userRepo.findById(id);
 		if(found.isPresent()) {
 			User temp= found.get();
+			temp.setFirstName(newData.getFirstName());
+			temp.setLastName(newData.getLastName());
+			temp.setPassword(newData.getPassword());
+			temp.setPhone(newData.getPhone());
 			return userRepo.save(temp);
 		}
 		return null;
@@ -64,6 +68,14 @@ public class UserService implements CRUDOperation<User>{
 	        return userOptional.get();
 	    }
 	    return null;
+	}
+	
+	public User getUserByEmail(String email) {
+		Optional<User> userOptional = userRepo.findByEmail(email);
+		if(userOptional.isPresent()) {
+			return userOptional.get();
+		}
+		return null;
 	}
 
 	@Override
