@@ -7,12 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.model.User;
-import co.edu.unbosque.model.request.EmailRequest;
 import co.edu.unbosque.service.UserService;
 import jakarta.transaction.Transactional;
 
@@ -42,14 +43,14 @@ public class UserController {
 		
 	}
 	
-	@PostMapping(path = "/getalpacaid", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map<String, String>> getAlpacaUserIdByEmail(@RequestBody EmailRequest emailRequest) {
-	    if (emailRequest.getEmail() == null || emailRequest.getEmail().trim().isEmpty()) {
+	@GetMapping(path = "/getalpacaid")
+	public ResponseEntity<Map<String, String>> getAlpacaUserIdByEmail(@RequestParam String email) {
+	    if (email == null || email.trim().isEmpty()) {
 	        return new ResponseEntity<>(Map.of("error", "El email no puede estar vacío"), HttpStatus.BAD_REQUEST);
 	    }
 	    
 	    try {
-	        String alpacaUserId = userServ.getAlpacaUserIdByEmail(emailRequest.getEmail());
+	        String alpacaUserId = userServ.getAlpacaUserIdByEmail(email);
 	        if (alpacaUserId != null) {
 	            return new ResponseEntity<>(Map.of("alpacaUserId", alpacaUserId), HttpStatus.OK);
 	        }
@@ -58,4 +59,16 @@ public class UserController {
 	        return new ResponseEntity<>(Map.of("error", "Error al buscar el usuario: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	}
+	
+	@PostMapping(path = "/updatepassword")
+	public ResponseEntity<String> updatePassword(@RequestParam String email, @RequestParam String newPassword){
+		User updateUser=userServ.getUserByEmail(email);
+		if(updateUser!=null) {
+			updateUser.setPassword(newPassword);
+			return new ResponseEntity<String>("Contraseña cambiada exitosamente.",HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("Email no encontrado.",HttpStatus.NOT_FOUND);
+	}
+	
+	
 }
