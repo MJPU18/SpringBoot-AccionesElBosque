@@ -19,7 +19,7 @@ import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = { "http://localhost:8080", "http://localhost:8085", "*"})
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200"})
 @Transactional
 public class UserController {
 	

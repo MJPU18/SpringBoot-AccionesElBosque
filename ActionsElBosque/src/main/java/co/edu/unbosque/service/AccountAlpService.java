@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.core.type.TypeReference;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
 
 @Service
@@ -22,9 +20,11 @@ public class AccountAlpService {
 
 	public AccountAlpService(AlpacaConfig config) {
 
-		this.brokerClient = WebClient.builder().baseUrl("https://broker-api.sandbox.alpaca.markets")
+		this.brokerClient = WebClient.builder()
+				.baseUrl(config.getBaseUrl())
 				.defaultHeader("Authorization", config.getTokenAuth())
-				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(50 * 1024 * 1024)).build();
+				.codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(50 * 1024 * 1024))
+				.build();
 
 		this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	}
@@ -95,25 +95,5 @@ public class AccountAlpService {
 				.onErrorResume(e -> Mono.just(Map.of("error", "Error al cerrar la cuenta", "details", e.getMessage())));
 	}
 
-	public Mono<List<String>> getAchRelationshipsIds(String accountId) {
-		return brokerClient.get().uri("/v1/accounts/{account_id}/ach_relationships", accountId).retrieve()
-				.bodyToMono(String.class).map(response -> {
-					try {
-						// Parsear el JSON como una lista de mapas
-						List<Map<String, Object>> relationships = objectMapper.readValue(response,
-								new TypeReference<List<Map<String, Object>>>() {
-								});
-
-						// Extraer solo los IDs
-						return relationships.stream().map(rel -> (String) rel.get("id")).collect(Collectors.toList());
-
-					} catch (Exception e) {
-						throw new RuntimeException("Error al procesar la respuesta ACH", e);
-					}
-				}).onErrorResume(e -> {
-					// En caso de error, retornar una lista vacía o manejar el error según necesites
-					return Mono.just(Collections.emptyList());
-				});
-	}
 
 }

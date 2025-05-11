@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca")
-@CrossOrigin(origins = { "http://localhost:8080", "http://localhost:8081", "http://localhost:4200", "*" })
+@CrossOrigin(origins = { "http://localhost:8085","http://localhost:4200"})
 public class AccountAlpController {
 
 	@Autowired
@@ -124,14 +124,5 @@ public class AccountAlpController {
 				.defaultIfEmpty(ResponseEntity.ok().build());
 	}
 	
-	@GetMapping("/accounts/{account_id}/ach-relationships")
-	public Mono<ResponseEntity<List<String>>> getAchRelationshipsIds(@PathVariable("account_id") String accountId) {
-	    return accountServ.getAchRelationshipsIds(accountId)
-	            .map(ResponseEntity::ok)
-	            .onErrorResume(e -> Mono.just(
-	                    ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                            .body(Collections.emptyList())
-	            ));
-	}
-	
+
 }
