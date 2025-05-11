@@ -1,0 +1,78 @@
+package co.edu.unbosque.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import co.edu.unbosque.config.AlpacaConfig;
+import reactor.core.publisher.Mono;
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Service
+public class PortfolioService {
+    private final WebClient brokerClient;
+    private final ObjectMapper objectMapper;
+    
+    public PortfolioService(AlpacaConfig config) {
+        this.brokerClient = WebClient.builder()
+                .baseUrl(config.getBaseUrl())
+                .defaultHeader("Authorization", config.getTokenAuth())
+                .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(50 * 1024 * 1024))
+                .build();
+
+        this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
+    public Mono<List<Map<String, Object>>> getFillActivitiesByAccountId(String accountId) {
+        return brokerClient.get()
+                .uri("/v1/accounts/activities/FILL")
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    try {
+                        // Parsear la respuesta JSON a una lista de mapas
+                        List<Map<String, Object>> allActivities = objectMapper.readValue(
+                                response, 
+                                new TypeReference<List<Map<String, Object>>>() {});
+
+                        // Filtrar las actividades por account_id
+                        List<Map<String, Object>> filteredActivities = allActivities.stream()
+                                .filter(activity -> accountId.equals(activity.get("account_id")))
+                                .collect(Collectors.toList());
+
+                        return Mono.just(filteredActivities);
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                });
+    }
+    
+    public Mono<List<Map<String, Object>>> getTransferActivitiesByAccountId(String accountId) {
+        return brokerClient.get()
+                .uri("/v1/accounts/activities/TRANS")
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    try {
+                        // Parsear la respuesta JSON a una lista de mapas
+                        List<Map<String, Object>> allActivities = objectMapper.readValue(
+                                response, 
+                                new TypeReference<List<Map<String, Object>>>() {});
+
+                        // Filtrar las actividades por account_id
+                        List<Map<String, Object>> filteredActivities = allActivities.stream()
+                                .filter(activity -> accountId.equals(activity.get("account_id")))
+                                .collect(Collectors.toList());
+
+                        return Mono.just(filteredActivities);
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                });
+    }
+}
