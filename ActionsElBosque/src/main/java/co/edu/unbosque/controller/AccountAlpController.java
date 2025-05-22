@@ -23,12 +23,13 @@ import co.edu.unbosque.model.request.UserRequest;
 import co.edu.unbosque.service.AccountAlpService;
 import co.edu.unbosque.service.UserActivityService;
 import co.edu.unbosque.service.UserService;
+import co.edu.unbosque.util.EmailSender;
 import co.edu.unbosque.util.UserRequestMapper;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca")
-@CrossOrigin(origins = { "http://localhost:8085","http://localhost:4200"})
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200" })
 public class AccountAlpController {
 
 	@Autowired
@@ -76,6 +77,8 @@ public class AccountAlpController {
 
 				userActServ.logUserActivity(savedUser.getUserId(), "ACCOUNT_CREATION",
 						"Usuario creado: " + savedUser.getEmail());
+				String htmlWelcome = EmailSender.buildWelcomeEmail(newUser.getFirstName()+" "+newUser.getLastName());
+				EmailSender.sendEmail(newUser.getEmail(), "¡Bienvenida a Acciones ElBosque!", htmlWelcome);
 
 				return ResponseEntity.ok(response);
 			}
@@ -93,36 +96,32 @@ public class AccountAlpController {
 		}
 		return new ResponseEntity<Object>("No encontrado", HttpStatus.NOT_FOUND);
 	}
-	
+
 	@GetMapping("/accounts/{id}/trading-details")
 	public Mono<ResponseEntity<Object>> getAccountTradingDetails(@PathVariable String id) {
-	    return accountServ.getAccountTradingDetails(id)
-	            .map(response -> {
-	                if (response instanceof Map && ((Map<?, ?>) response).containsKey("error")) {
-	                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	                }
-	                return ResponseEntity.ok(response);
-	            });
+		return accountServ.getAccountTradingDetails(id).map(response -> {
+			if (response instanceof Map && ((Map<?, ?>) response).containsKey("error")) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			}
+			return ResponseEntity.ok(response);
+		});
 	}
-	
+
 	@GetMapping("/accounts/{account_id}/portfolio/history")
-	public Mono<ResponseEntity<Object>> getPortfolioHistoryById(
-	        @PathVariable("account_id") String accountId) {
-	    
-	    return accountServ.getPortfolioHistoryById(accountId)
-	            .map(response -> {
-	                if (response instanceof Map && ((Map<?, ?>) response).containsKey("error")) {
-	                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-	                }
-	                return ResponseEntity.ok(response);
-	            });
+	public Mono<ResponseEntity<Object>> getPortfolioHistoryById(@PathVariable("account_id") String accountId) {
+
+		return accountServ.getPortfolioHistoryById(accountId).map(response -> {
+			if (response instanceof Map && ((Map<?, ?>) response).containsKey("error")) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			}
+			return ResponseEntity.ok(response);
+		});
 	}
-	
+
 	@PostMapping("/accounts/{accountId}/close")
 	public Mono<ResponseEntity<Object>> closeAccount(@PathVariable String accountId) {
 		return accountServ.closeAccount(accountId).map(response -> ResponseEntity.ok().body(response))
 				.defaultIfEmpty(ResponseEntity.ok().build());
 	}
-	
 
 }

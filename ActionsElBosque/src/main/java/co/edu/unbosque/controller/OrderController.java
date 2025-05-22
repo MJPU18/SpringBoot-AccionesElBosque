@@ -13,6 +13,7 @@ import co.edu.unbosque.model.request.OrderRequest;
 import co.edu.unbosque.service.OrderService;
 import co.edu.unbosque.service.UserActivityService;
 import co.edu.unbosque.service.UserService;
+import co.edu.unbosque.util.EmailSender;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -33,6 +34,7 @@ public class OrderController {
 	@PostMapping("/{accountId}")
 	public Mono<String> placeOrder(@PathVariable String accountId, @RequestBody OrderRequest orderRequest) {
 		Mono<String> order = orderService.placeOrder(accountId, orderRequest);
+		
 		User user = userServ.getUserByAlpacaId(accountId);
 
 		String symbol = orderRequest.getSymbol();
@@ -43,10 +45,14 @@ public class OrderController {
 		if ("buy".equalsIgnoreCase(orderRequest.getSide())) {
 			details = "Se realizo una orden de compra de tipo "+type+", el usuario " + user.getEmail() + " compro " + quantity
 					+  " acciones de "  + symbol + ".";
+			String html = EmailSender.buildOrderConfirmationEmail(user.getFirstName()+" "+user.getLastName(), orderRequest.getSide(), type, symbol, quantity);
+			EmailSender.sendEmail(user.getEmail(), "Confirmación de compra en Acciones ElBosque", html);
 			userActServ.logUserActivity(user.getUserId(), "BUY_ORDER", details);
 		} else if ("sell".equalsIgnoreCase(orderRequest.getSide())) {
 			details = "Se realizo una orden de venta de tipo "+type+", el usuario " + user.getEmail() + " vendio " + quantity
 					+ " acciones de " + symbol + ".";
+			String html = EmailSender.buildOrderConfirmationEmail(user.getFirstName()+" "+user.getLastName(), orderRequest.getSide(), type, symbol, quantity);
+			EmailSender.sendEmail(user.getEmail(), "Confirmación de venta en Acciones ElBosque", html);
 			userActServ.logUserActivity(user.getUserId(), "SELL_ORDER", details);
 		}
 		return order;
