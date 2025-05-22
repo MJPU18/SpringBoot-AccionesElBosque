@@ -30,6 +30,9 @@ public class PortfolioController {
     public Mono<List<Map<String, Object>>> getTransferActivitiesByAccountId(@PathVariable String accountId) {
         return portServ.getTransferActivitiesByAccountId(accountId);
     }
-	
+    @GetMapping("/{accountId}/Accepted")
+    public Mono<List<Map<String, Object>>> getOrdersByAccountId(@PathVariable String accountId) {
+        return portServ.getAcceptedActivitiesByAccountId(accountId);
+    }
 	
 }
