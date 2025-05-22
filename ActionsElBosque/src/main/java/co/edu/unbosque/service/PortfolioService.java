@@ -51,6 +51,24 @@ public class PortfolioService {
                     }
                 });
     }
+    public Mono<List<Map<String, Object>>> getAcceptedActivitiesByAccountId(String accountId) {
+        return brokerClient.get()
+                .uri("/v1/trading/accounts/{account_id}/orders", accountId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    try {
+                        // Parse the JSON response to a list of maps
+                        List<Map<String, Object>> orders = objectMapper.readValue(
+                                response, 
+                                new TypeReference<List<Map<String, Object>>>() {});
+                        
+                        return Mono.just(orders);
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                });
+    }
     
     public Mono<List<Map<String, Object>>> getTransferActivitiesByAccountId(String accountId) {
         return brokerClient.get()
