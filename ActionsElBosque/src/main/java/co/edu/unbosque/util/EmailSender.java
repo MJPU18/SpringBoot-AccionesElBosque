@@ -22,7 +22,7 @@ public class EmailSender {
                 return new PasswordAuthentication(username, password);
             }
         });
-         
+        
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username, "Acciones ElBosque"));
@@ -35,7 +35,7 @@ public class EmailSender {
             
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } 
+        }
     }
 
     public static String buildWelcomeEmail(String userName) {
