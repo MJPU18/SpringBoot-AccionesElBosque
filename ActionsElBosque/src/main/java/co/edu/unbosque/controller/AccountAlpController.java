@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.model.User;
 import co.edu.unbosque.model.request.UserAlpRequest;
 import co.edu.unbosque.model.request.UserRequest;
+import co.edu.unbosque.pattern.adapter.UserRequestAdapter;
 import co.edu.unbosque.service.AccountAlpService;
 import co.edu.unbosque.service.UserActivityService;
 import co.edu.unbosque.service.UserService;
 import co.edu.unbosque.util.EmailSender;
-import co.edu.unbosque.util.UserRequestMapper;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -47,7 +47,8 @@ public class AccountAlpController {
 
 	@PostMapping(path = "/accounts/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Object> createAccount(@RequestBody UserRequest request) {
-		UserAlpRequest userAlp = UserRequestMapper.toUserAlpRequest(request);
+		UserRequestAdapter adapter = new UserRequestAdapter(request);
+		UserAlpRequest userAlp = adapter.getUserAlpRequest();
 		Object response = accountServ.createAccount(userAlp).block();
 
 		if (response instanceof Map) {
