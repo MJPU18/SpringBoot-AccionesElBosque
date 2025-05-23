@@ -59,7 +59,7 @@ public class EmailSender {
                         <p style='margin-top: 20px;'>Puedes iniciar sesión en cualquier momento desde nuestra app o plataforma web:</p>
                         
                         <div style='text-align: center; margin: 30px 0;'>
-                            <a href='http://localhost:4200/login' style='background-color: #2a9d8f; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Iniciar sesión</a>
+                            <a href='https://angular-accioneselbosque-production.up.railway.app/#/login' style='background-color: #2a9d8f; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;'>Iniciar sesión</a>
                         </div>
 
                         <p>Si tienes alguna duda o necesitas soporte, no dudes en contactarnos.</p>
