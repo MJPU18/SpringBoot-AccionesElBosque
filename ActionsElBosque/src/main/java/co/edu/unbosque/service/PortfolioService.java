@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import co.edu.unbosque.config.AlpacaConfig;
 import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,6 +30,29 @@ public class PortfolioService {
         this.objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     }
 
+    public Mono<Map<String, String>> getAccountValues(String accountId) {
+        return brokerClient.get()
+                .uri("/v1/trading/accounts/{account_id}/account", accountId)
+                .retrieve()
+                .bodyToMono(String.class)
+                .flatMap(response -> {
+                    try {
+                        // Parse the full response
+                        Map<String, Object> fullResponse = objectMapper.readValue(
+                                response,
+                                new TypeReference<Map<String, Object>>() {});
+                        
+                        // Create a new map with only the required fields
+                        Map<String, String> simplifiedResponse = new HashMap<>();
+                        simplifiedResponse.put("portfolio_value", fullResponse.get("portfolio_value").toString());
+                        simplifiedResponse.put("buying_power", fullResponse.get("buying_power").toString());
+                        
+                        return Mono.just(simplifiedResponse);
+                    } catch (Exception e) {
+                        return Mono.error(e);
+                    }
+                });
+    }
     public Mono<List<Map<String, Object>>> getFillActivitiesByAccountId(String accountId) {
         return brokerClient.get()
                 .uri("/v1/accounts/activities/FILL")
