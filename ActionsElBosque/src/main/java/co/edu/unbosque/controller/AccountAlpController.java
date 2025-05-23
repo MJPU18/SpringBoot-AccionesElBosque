@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca")
-@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200" })
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200", "*" })
 public class AccountAlpController {
 
 	@Autowired

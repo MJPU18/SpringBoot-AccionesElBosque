@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/alpaca")
-@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200" })
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200", "*"  })
 public class PortfolioController {
 	
 	@Autowired

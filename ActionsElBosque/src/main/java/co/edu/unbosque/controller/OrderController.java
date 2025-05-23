@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/alpaca/orders")
-@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200" })
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200", "*"  })
 public class OrderController {
 
 	private final OrderService orderService;

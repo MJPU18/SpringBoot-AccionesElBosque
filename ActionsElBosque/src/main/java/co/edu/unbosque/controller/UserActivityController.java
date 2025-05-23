@@ -16,7 +16,7 @@ import co.edu.unbosque.service.UserActivityService;
 
 @RestController
 @RequestMapping("/logs")
-@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200"})
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200", "*" })
 public class UserActivityController {
 
 	@Autowired
