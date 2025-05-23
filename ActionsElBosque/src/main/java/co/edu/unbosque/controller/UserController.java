@@ -14,86 +14,61 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import co.edu.unbosque.model.User;
-import co.edu.unbosque.model.response.UserResponse;
 import co.edu.unbosque.service.UserService;
 import jakarta.transaction.Transactional;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200" })
+@CrossOrigin(origins = { "http://localhost:8085", "http://localhost:4200"})
 @Transactional
 public class UserController {
-
+	
 	@Autowired
 	private UserService userServ;
-
+	
+	
 	public UserController() {
-
+		
 	}
-
+	
 	@PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> createUser(@RequestBody User newUser) {
+	public ResponseEntity<String> createUser(@RequestBody User newUser){
 		newUser.setUserId(null);
-		String validate = userServ.validateUser(newUser);
-		if (!validate.isEmpty()) {
-			return new ResponseEntity<String>("Usuario Inaceptable" + validate, HttpStatus.NOT_ACCEPTABLE);
+		String validate=userServ.validateUser(newUser);
+		if(!validate.isEmpty()) {
+			return new ResponseEntity<String>("Usuario Inaceptable"+validate,HttpStatus.NOT_ACCEPTABLE);
 		}
 		userServ.create(newUser);
-		return new ResponseEntity<String>("Usuario creado exitosamente.", HttpStatus.CREATED);
-
+		return new ResponseEntity<String>("Usuario creado exitosamente.",HttpStatus.CREATED);
+		
 	}
-
+	
 	@GetMapping(path = "/getalpacaid")
 	public ResponseEntity<Map<String, String>> getAlpacaUserIdByEmail(@RequestParam String email) {
-		if (email == null || email.trim().isEmpty()) {
-			return new ResponseEntity<>(Map.of("error", "El email no puede estar vacío"), HttpStatus.BAD_REQUEST);
-		}
-
-		try {
-			String alpacaUserId = userServ.getAlpacaUserIdByEmail(email);
-			if (alpacaUserId != null) {
-				return new ResponseEntity<>(Map.of("alpacaUserId", alpacaUserId), HttpStatus.OK);
-			}
-			return new ResponseEntity<>(Map.of("error", "No se encontró usuario con el email proporcionado"),
-					HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			return new ResponseEntity<>(Map.of("error", "Error al buscar el usuario: " + e.getMessage()),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	    if (email == null || email.trim().isEmpty()) {
+	        return new ResponseEntity<>(Map.of("error", "El email no puede estar vacío"), HttpStatus.BAD_REQUEST);
+	    }
+	    
+	    try {
+	        String alpacaUserId = userServ.getAlpacaUserIdByEmail(email);
+	        if (alpacaUserId != null) {
+	            return new ResponseEntity<>(Map.of("alpacaUserId", alpacaUserId), HttpStatus.OK);
+	        }
+	        return new ResponseEntity<>(Map.of("error", "No se encontró usuario con el email proporcionado"), HttpStatus.NOT_FOUND);
+	    } catch (Exception e) {
+	        return new ResponseEntity<>(Map.of("error", "Error al buscar el usuario: " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
 	}
-
+	
 	@PostMapping(path = "/updatepassword")
-	public ResponseEntity<String> updatePassword(@RequestParam String email, @RequestParam String newPassword) {
-		User updateUser = userServ.getUserByEmail(email);
-		if (updateUser != null) {
+	public ResponseEntity<String> updatePassword(@RequestParam String email, @RequestParam String newPassword){
+		User updateUser=userServ.getUserByEmail(email);
+		if(updateUser!=null) {
 			updateUser.setPassword(newPassword);
-			return new ResponseEntity<String>("Contraseña cambiada exitosamente.", HttpStatus.OK);
+			return new ResponseEntity<String>("Contraseña cambiada exitosamente.",HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Email no encontrado.", HttpStatus.NOT_FOUND);
+		return new ResponseEntity<String>("Email no encontrado.",HttpStatus.NOT_FOUND);
 	}
-
-	@PostMapping(path = "/changepassword")
-	public ResponseEntity<String> changePassword(@RequestParam String email, @RequestParam String oldPassword,
-			@RequestParam String newPassword) {
-		User updateUser = userServ.getUserByEmail(email);
-		if (updateUser == null) {
-			return new ResponseEntity<String>("Email no encontrado.", HttpStatus.NOT_FOUND);
-		} else if (!updateUser.getPassword().equals(oldPassword)) {
-			return new ResponseEntity<String>("Contraseña actual incorrecta.", HttpStatus.UNAUTHORIZED);
-		}
-		updateUser.setPassword(newPassword);
-		return new ResponseEntity<String>("Contraseña cambiada exitosamente.", HttpStatus.OK);
-	}
-
-	@GetMapping(path = "/getuserbyalpacaid")
-	public ResponseEntity<UserResponse> getUserByAlpacaId(@RequestParam String alpacaId) {
-		User user = userServ.getUserByAlpacaId(alpacaId);
-		if (user == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		UserResponse response = new UserResponse(user.getCardId(), user.getFirstName(), user.getLastName(),
-				user.getEmail(), user.getPhone());
-		return new ResponseEntity<>(response, HttpStatus.OK);
-	}
-
+	
+	
 }
